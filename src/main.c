@@ -31,7 +31,9 @@ int main(int argc, char *argv[])
 {
 	setlocale(LC_ALL, "");
 	// +1 for a space character.
-	char *content = malloc(u8_strlen(argv[2]) + 1);
+	// Sometimes unicode character takes more than 1 byte (less than 4 in most cases)
+	// so it have to be multiplied by 4 to have a margin for error (segfault if not).
+	char *content = malloc(u8_strlen(argv[2])*4);
 	if (argc < 3) {
 		fprintf(stderr, "not enough arguments. expected more than 3 (found %d). exiting...\n", argc);
 		exit(-1);
@@ -43,7 +45,6 @@ int main(int argc, char *argv[])
 		strcpy(content, argv[2]);
 		strcat(content, " ");
 		for (int i = 3; i <= (argc - 1); i++) {
-			// Object in mirror seem closer than they actually are.
 			// Sometimes unicode character takes more than 1 byte (less than 4 in most cases)
 			// so it have to be multiplied by 4 to have a margin for error (segfault if not).
 			tmp = realloc(content, u8_strlen(content)*4 + 1 + u8_strlen(argv[i])*4);
